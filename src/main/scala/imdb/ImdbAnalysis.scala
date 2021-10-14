@@ -14,20 +14,35 @@ object ImdbAnalysis {
   val titleBasicsList: List[TitleBasics] = ImdbData.readFile(ImdbData.titleBasicsPath, ImdbData.parseTitleBasics _);
 
   // Hint: use a combination of `ImdbData.titleRatingsPath` and `ImdbData.parseTitleRatings`
-  val titleRatingsList: List[TitleRatings] = ImdbData.readFile(ImdbData.titleRatingsPath, ImdbData.parseTitleRatings _);
+  //val titleRatingsList: List[TitleRatings] = ImdbData.readFile(ImdbData.titleRatingsPath, ImdbData.parseTitleRatings _);
 
   // Hint: use a combination of `ImdbData.titleCrewPath` and `ImdbData.parseTitleCrew`
-  val titleCrewList: List[TitleCrew] = ImdbData.readFile(ImdbData.titleCrewPath, ImdbData.parseTitleCrew);
+  //val titleCrewList: List[TitleCrew] = ImdbData.readFile(ImdbData.titleCrewPath, ImdbData.parseTitleCrew _);
 
   // Hint: use a combination of `ImdbData.nameBasicsPath` and `ImdbData.parseNameBasics`
-  val nameBasicsList: List[NameBasics] = ImdbData.readFile(ImdbData.nameBasicsPath, ImdbData.parseNameBasics);
+  //val nameBasicsList: List[NameBasics] = ImdbData.readFile(ImdbData.nameBasicsPath, ImdbData.parseNameBasics _);
 
   def task1(list: List[TitleBasics]): List[(Float, Int, Int, String)] = {
     Nil;
+    //val temp = list.last();
+    //val temp2 = temp.flatMap(x => x.genres)
+    //val temp3 = temp2.groupBy(i => i)
+    //println(temp3)
+    // if genres / runtimeMinutes is None, then we skip that row
+    // let's do a groupby according to genres
+    // where we also store the count, max, min and total somewhere
+    // at the end compute max, min, average
+    // and return for each genre (key)
+    // first a flatmap then a groupby
+    // val temp = list.flatMap(x => x.lift(0))
   }
 
   def task2(l1: List[TitleBasics], l2: List[TitleRatings]): List[String] = {
     Nil;
+    // First join titlebasics and titleratings
+    // then do a filter based on the conditions
+    // return the original title
+    
   }
 
   def task3(l1: List[TitleBasics], l2: List[TitleRatings]): List[(Int, String, String)] = {
@@ -39,11 +54,26 @@ object ImdbAnalysis {
     Nil;
   }
 
+  def aFunction(x: TitleBasics) = {
+    // we need to somehow skip the None
+    if (x.genres != None && x.runtimeMinutes != None) {
+      val temp = x.genres.get
+      temp.zip(List.fill(temp.length)(x.runtimeMinutes.get))
+    } else {
+      List()
+    }
+  }
+
   def main(args: Array[String]) {
-    println(titleBasicsList.lift(1))
-    println(titleRatingsList.lift(1))
-    println(titleCrewList.lift(1))
-    println(nameBasicsList.lift(1))
+    println(titleBasicsList.last)
+    println(titleBasicsList.head)
+    val temp = titleBasicsList.last;
+    val copy = titleBasicsList.head;
+    val dataset = List(temp,copy)
+    val result = dataset.flatMap(aFunction _)
+    println(result)
+    val temp2 = result.groupBy(x => x._1)
+    println(temp2)
     //val durations = timed("Task 1", task1(titleBasicsList))
     //val titles = timed("Task 2", task2(titleBasicsList, titleRatingsList))
     //val topRated = timed("Task 3", task3(titleBasicsList, titleRatingsList))
