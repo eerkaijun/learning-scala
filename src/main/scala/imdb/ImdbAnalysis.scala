@@ -23,7 +23,6 @@ object ImdbAnalysis {
   //val nameBasicsList: List[NameBasics] = ImdbData.readFile(ImdbData.nameBasicsPath, ImdbData.parseNameBasics _);
 
   def task1(list: List[TitleBasics]): List[(Float, Int, Int, String)] = {
-    Nil;
     //val temp = list.last();
     //val temp2 = temp.flatMap(x => x.genres)
     //val temp3 = temp2.groupBy(i => i)
@@ -35,6 +34,11 @@ object ImdbAnalysis {
     // and return for each genre (key)
     // first a flatmap then a groupby
     // val temp = list.flatMap(x => x.lift(0))
+    val result = list.flatMap(aFunction _)
+    // println(result)
+    val temp2 = result.groupBy(x => x._1).map { case (k,v) => (k,v.map(_._2))}
+    // println(temp2)
+    temp2.map({ case (k,v) => (v.sum.toFloat/v.size, v.min, v.max, k)}).toList
   }
 
   def task2(l1: List[TitleBasics], l2: List[TitleRatings]): List[String] = {
@@ -68,12 +72,14 @@ object ImdbAnalysis {
     println(titleBasicsList.last)
     println(titleBasicsList.head)
     val temp = titleBasicsList.last;
-    val copy = titleBasicsList.head;
+    val copy = titleBasicsList.last;
     val dataset = List(temp,copy)
     val result = dataset.flatMap(aFunction _)
     println(result)
-    val temp2 = result.groupBy(x => x._1)
+    val temp2 = result.groupBy(x => x._1).map { case (k,v) => (k,v.map(_._2))}
     println(temp2)
+    val temp3 = temp2.map { case (k,v) => (v.sum.toFloat/v.size, v.min, v.max, k)}
+    println(temp3)
     //val durations = timed("Task 1", task1(titleBasicsList))
     //val titles = timed("Task 2", task2(titleBasicsList, titleRatingsList))
     //val topRated = timed("Task 3", task3(titleBasicsList, titleRatingsList))
