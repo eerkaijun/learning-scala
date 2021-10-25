@@ -20,7 +20,7 @@ object ImdbAnalysis {
   val titleCrewList: List[TitleCrew] = ImdbData.readFile(ImdbData.titleCrewPath, ImdbData.parseTitleCrew _);
 
   // Hint: use a combination of `ImdbData.nameBasicsPath` and `ImdbData.parseNameBasics`
-  //val nameBasicsList: List[NameBasics] = ImdbData.readFile(ImdbData.nameBasicsPath, ImdbData.parseNameBasics _);
+  val nameBasicsList: List[NameBasics] = ImdbData.readFile(ImdbData.nameBasicsPath, ImdbData.parseNameBasics _);
 
   def task1(list: List[TitleBasics]): List[(Float, Int, Int, String)] = {
     //val temp = list.last();
@@ -63,6 +63,12 @@ object ImdbAnalysis {
 
   def task3(l1: List[TitleBasics], l2: List[TitleRatings]): List[(Int, String, String)] = {
     Nil;
+    // val l1_filtered = l1.filter({ case x => 
+    //   x.titleType != None && x.titleType.get == "movie" && 
+    //   x.primaryTitle != None && x.genres != None &&
+    //   x.startYear != None && x.startYear.get >= 1900 && 
+    //   x.startYear.get <= 1999})
+    // l1_filtered.flatMap(x => l2.map(y => (x.y))).filter{ case (x,y) => x.tconst == y.tconst}
   }
 
   // Hint: There could be an input list that you do not really need in your implementation.
@@ -80,25 +86,30 @@ object ImdbAnalysis {
     }
   }
 
-  def aFunction2(x: TitleBasics) = {
-    if (x.titleType.get == "movie" && x.primaryTitle != None && x.startYear != None && x.endYear != None) {
-      (x.primaryTitle.get)
-    }
-  }
-
   def main(args: Array[String]) {
-    //println(titleBasicsList.last)
-    //println(titleBasicsList.head)
-    val temp = titleBasicsList.last;
-    val copy = titleBasicsList.last;
-    val dataset1 = List(temp, copy)
-
-    val temp2 = titleRatingsList.last;
-    val temp3 = titleRatingsList.last;
-    val dataset2 = List(temp2, temp3)
-    //println(titleBasicsList)
-    //println(dataset1)
-    //println(dataset2)
+    val l1_filtered = titleBasicsList.filter({ case x => 
+      x.titleType != None && x.titleType.get == "movie" && 
+      x.primaryTitle != None && x.genres != None &&
+      x.startYear != None && x.startYear.get >= 1900 && 
+      x.startYear.get <= 1909})
+    val temp = l1_filtered.flatMap(x => titleRatingsList.map(y => (x,y))).filter{ case (x,y) => x.tconst == y.tconst}
+    .map{ case(x,y) => (x.primaryTitle.get, x.genres.get, y.averageRating)}
+    //val temp = l1_filtered.filter(x => x.startYear.get == 1950)
+    //val temp2 = temp.flatMap(x => x.genres.get.zip(List.fill(temp.length)(x.primaryTitle.get, x.tconst)))
+    //println(temp2)
+    //val temp3 = temp2.groupBy(x => x._1).map { case (k,v) => (k,v.map(_._2))}
+    //println(temp)
+    // try to have one entry for each genre ie flatmap for genre
+    val temp2 = temp.flatMap(x => x._2.zip(List.fill(x._2.length)(x._1, x._3)))
+    //println(temp2)
+    val temp3 = temp2.groupBy(x => x._1).map{ case (k,v) => (k,v.map(_._2))}
+    println(temp3)
+    val temp4 = temp3.map{ case(k,v) => (k,v.maxBy(_._2))}
+    println(temp4)
+    val temp5 = temp4.map{ case(k,v) => (0, k, v._1)}
+    println(temp5)
+    
+    //println(l1_filtered.flatMap(x => titleRatingsList.map(y => (x,y))).filter{ case (x,y) => x.tconst == y.tconst})
     //dataset1.flatMap(x => dataset2.map(y => (x,y))).filter({ case ((a, _, _, _, _), (b, _)) => a == b })
     
     /*
