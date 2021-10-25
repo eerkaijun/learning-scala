@@ -14,10 +14,10 @@ object ImdbAnalysis {
   val titleBasicsList: List[TitleBasics] = ImdbData.readFile(ImdbData.titleBasicsPath, ImdbData.parseTitleBasics _);
 
   // Hint: use a combination of `ImdbData.titleRatingsPath` and `ImdbData.parseTitleRatings`
-  //val titleRatingsList: List[TitleRatings] = ImdbData.readFile(ImdbData.titleRatingsPath, ImdbData.parseTitleRatings _);
+  val titleRatingsList: List[TitleRatings] = ImdbData.readFile(ImdbData.titleRatingsPath, ImdbData.parseTitleRatings _);
 
   // Hint: use a combination of `ImdbData.titleCrewPath` and `ImdbData.parseTitleCrew`
-  //val titleCrewList: List[TitleCrew] = ImdbData.readFile(ImdbData.titleCrewPath, ImdbData.parseTitleCrew _);
+  val titleCrewList: List[TitleCrew] = ImdbData.readFile(ImdbData.titleCrewPath, ImdbData.parseTitleCrew _);
 
   // Hint: use a combination of `ImdbData.nameBasicsPath` and `ImdbData.parseNameBasics`
   //val nameBasicsList: List[NameBasics] = ImdbData.readFile(ImdbData.nameBasicsPath, ImdbData.parseNameBasics _);
@@ -42,10 +42,22 @@ object ImdbAnalysis {
   }
 
   def task2(l1: List[TitleBasics], l2: List[TitleRatings]): List[String] = {
-    Nil;
     // First join titlebasics and titleratings
     // then do a filter based on the conditions
     // return the original title
+    val l1_filtered = l1.filter({ case x => 
+      x.titleType != None && x.titleType.get == "movie" && 
+      x.primaryTitle != None && 
+      x.startYear != None && x.startYear.get >= 1990 && 
+      x.startYear.get <= 2018})
+    val l2_filtered = l2.filter({ case y =>
+      y.averageRating >= 7.5 && y.numVotes >= 500000})
+    // l1_filtered.map({ case x => 
+    //   l2_filtered.filter({ case y => y.tconst == x.tconst})
+    //   .map({ case x => x.primaryTitle.get})})
+    l1_filtered.flatMap(x => l2_filtered.map(y => (x,y))).filter{ case (x,y) => x.tconst == y.tconst}
+    .map{ case(x,y) => x.primaryTitle.get}
+
     
   }
 
@@ -68,18 +80,36 @@ object ImdbAnalysis {
     }
   }
 
+  def aFunction2(x: TitleBasics) = {
+    if (x.titleType.get == "movie" && x.primaryTitle != None && x.startYear != None && x.endYear != None) {
+      (x.primaryTitle.get)
+    }
+  }
+
   def main(args: Array[String]) {
-    println(titleBasicsList.last)
-    println(titleBasicsList.head)
+    //println(titleBasicsList.last)
+    //println(titleBasicsList.head)
     val temp = titleBasicsList.last;
     val copy = titleBasicsList.last;
+    val dataset1 = List(temp, copy)
+
+    val temp2 = titleRatingsList.last;
+    val temp3 = titleRatingsList.last;
+    val dataset2 = List(temp2, temp3)
+    //println(titleBasicsList)
+    //println(dataset1)
+    //println(dataset2)
+    //dataset1.flatMap(x => dataset2.map(y => (x,y))).filter({ case ((a, _, _, _, _), (b, _)) => a == b })
+    
+    /*
     val dataset = List(temp,copy)
     val result = dataset.flatMap(aFunction _)
     println(result)
     val temp2 = result.groupBy(x => x._1).map { case (k,v) => (k,v.map(_._2))}
     println(temp2)
     val temp3 = temp2.map { case (k,v) => (v.sum.toFloat/v.size, v.min, v.max, k)}
-    println(temp3)
+    println(temp3)*/
+
     //val durations = timed("Task 1", task1(titleBasicsList))
     //val titles = timed("Task 2", task2(titleBasicsList, titleRatingsList))
     //val topRated = timed("Task 3", task3(titleBasicsList, titleRatingsList))
