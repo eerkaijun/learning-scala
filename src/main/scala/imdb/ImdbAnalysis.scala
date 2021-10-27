@@ -73,7 +73,18 @@ object ImdbAnalysis {
 
   // Hint: There could be an input list that you do not really need in your implementation.
   def task4(l1: List[TitleBasics], l2: List[TitleCrew], l3: List[NameBasics]): List[(String, Int)] = {
-    Nil;
+    val l3_filtered = l3.filter{ case x => 
+      x.primaryName != None && x.knownForTitles != None &&
+      x.knownForTitles.get.length >= 2
+    }
+    val l1_filtered = l1.filter{ case x => 
+      x.startYear != None && x.startYear.get >= 2010 && x.startYear.get <= 2021
+    }.flatMap(x => List(x.tconst)).toSet
+    l3_filtered.flatMap(x => x.knownForTitles.get.zip(List.fill(x.knownForTitles.get.length)(x.primaryName.get)))
+    .filter{ case x => l1_filtered.contains(x._1)}
+    .groupBy(x => x._2)
+    .filter{case(k,v) => v.length >= 2}
+    .map{case(k,v)=>(k,v.length)}.toList
   }
 
   def aFunction(x: TitleBasics) = {
@@ -87,6 +98,7 @@ object ImdbAnalysis {
   }
 
   def main(args: Array[String]) {
+    /*
     val l1_filtered = titleBasicsList.filter({ case x => 
       x.titleType != None && x.titleType.get == "movie" && 
       x.primaryTitle != None && x.genres != None &&
@@ -104,11 +116,43 @@ object ImdbAnalysis {
     //println(temp2)
     val temp3 = temp2.groupBy(x => x._1).map{ case (k,v) => (k,v.map(_._2))}
     println(temp3)
-    val temp4 = temp3.map{ case(k,v) => (k,v.maxBy(_._2))}
+    val temp4 = temp3.map{ case(k,v) => (k,v.sorted.maxBy(_._2))}
     println(temp4)
     val temp5 = temp4.map{ case(k,v) => (0, k, v._1)}
     println(temp5)
-    
+    */
+
+    /*
+    val l1_filtered = titleBasicsList.filter({ case x => 
+      x.titleType != None && x.titleType.get == "movie" && 
+      x.primaryTitle != None && x.genres != None &&
+      x.startYear != None && x.startYear.get >= 1900 && 
+      x.startYear.get <= 1999})
+    val temp = l1_filtered.flatMap(x => titleRatingsList.map(y => (x,y))).filter{ case (x,y) => x.tconst == y.tconst}
+      .map{ case(x,y) => (x.startYear.get, x.primaryTitle.get, x.genres.get, y.averageRating)}
+      .groupBy(x => x._1 / 10 % 10)
+    println(temp)
+    */
+
+
+
+    // Task 4
+    val temp = nameBasicsList.filter{ case x => 
+      x.primaryName != None && x.knownForTitles != None &&
+      x.knownForTitles.get.length >= 2
+    }
+    val filtered = titleBasicsList.filter{ case x => 
+      x.startYear != None && x.startYear.get >= 2010 && x.startYear.get <= 2021
+    }.flatMap(x => List(x.tconst)).toSet
+    //println(filtered)
+    //val temp2 = temp.flatMap(x => x.knownForTitles.get.zip(List.fill(x.knownForTitles.get.length)(x.primaryName.get, x.nconst)))
+    val temp2 = temp.flatMap(x => x.knownForTitles.get.zip(List.fill(x.knownForTitles.get.length)(x.primaryName.get)))
+    //println(temp2)
+    val temp3 = temp2.filter{case x => filtered.contains(x._1)}
+    println(temp3)
+    //println(temp3.map{ case (x,y) => (x, y._1, y._2)}.groupBy(x => x._3).filter{case(k,v) => v.length >= 2})
+    println(temp3.groupBy(x => x._2).filter{case(k,v) => v.length >= 2}.map{case(k,v)=>(k,v.length)}.toList)
+
     //println(l1_filtered.flatMap(x => titleRatingsList.map(y => (x,y))).filter{ case (x,y) => x.tconst == y.tconst})
     //dataset1.flatMap(x => dataset2.map(y => (x,y))).filter({ case ((a, _, _, _, _), (b, _)) => a == b })
     
