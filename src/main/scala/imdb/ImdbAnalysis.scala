@@ -84,11 +84,11 @@ object ImdbAnalysis {
     val l1_filtered = l1.filter{ case x => 
       x.startYear != None && x.startYear.get >= 2010 && x.startYear.get <= 2021
     }.flatMap(x => List(x.tconst)).toSet
-    l3_filtered.flatMap(x => x.knownForTitles.get.zip(List.fill(x.knownForTitles.get.length)(x.primaryName.get)))
+    l3_filtered.flatMap(x => (x.knownForTitles.get,(List.fill(x.knownForTitles.get.length)(x.primaryName.get)),(List.fill(x.knownForTitles.get.length)(x.nconst))).zipped.toList)
     .filter{ case x => l1_filtered.contains(x._1)}
-    .groupBy(x => x._2)
+    .groupBy(x => x._3)
     .filter{case(k,v) => v.length >= 2}
-    .map{case(k,v)=>(k,v.length)}.toList
+    .map{case(k,v)=>(v.head._2,v.length)}.toList
   }
 
   def aFunction(x: TitleBasics) = {
@@ -126,7 +126,7 @@ object ImdbAnalysis {
     println(temp5)
     */
 
-    
+    /*
     val l1_filtered = titleBasicsList.filter({ case x => 
       x.titleType != None && x.titleType.get == "movie" && 
       x.primaryTitle != None && x.genres != None &&
@@ -145,10 +145,10 @@ object ImdbAnalysis {
     //  .map{ case(x,y) => (x.startYear.get, x.primaryTitle.get, x.genres.get, y.averageRating)}
     //  .groupBy(x => x._1 / 10 % 10)
     //println(temp)
+    */  
+
+
     
-
-
-    /*
     // Task 4
     val temp = nameBasicsList.filter{ case x => 
       x.primaryName != None && x.knownForTitles != None &&
@@ -159,16 +159,15 @@ object ImdbAnalysis {
     }.flatMap(x => List(x.tconst)).toSet
     //println(filtered)
     //val temp2 = temp.flatMap(x => x.knownForTitles.get.zip(List.fill(x.knownForTitles.get.length)(x.primaryName.get, x.nconst)))
-    val temp2 = temp.flatMap(x => x.knownForTitles.get.zip(List.fill(x.knownForTitles.get.length)(x.primaryName.get)))
+    val temp2 = temp.flatMap(x => (x.knownForTitles.get,(List.fill(x.knownForTitles.get.length)(x.primaryName.get)),(List.fill(x.knownForTitles.get.length)(x.nconst))).zipped.toList)
     //println(temp2)
     val temp3 = temp2.filter{case x => filtered.contains(x._1)}
-    println(temp3)
-    //println(temp3.map{ case (x,y) => (x, y._1, y._2)}.groupBy(x => x._3).filter{case(k,v) => v.length >= 2})
-    println(temp3.groupBy(x => x._2).filter{case(k,v) => v.length >= 2}.map{case(k,v)=>(k,v.length)}.toList)
+    //println(temp3)
+    println(temp3.groupBy(x => x._3).filter{case(k,v) => v.length >= 2}.map{case(k,v)=>(v.head._2,v.length)}.toList)
 
     //println(l1_filtered.flatMap(x => titleRatingsList.map(y => (x,y))).filter{ case (x,y) => x.tconst == y.tconst})
     //dataset1.flatMap(x => dataset2.map(y => (x,y))).filter({ case ((a, _, _, _, _), (b, _)) => a == b })
-    */
+    
 
     /*
     val dataset = List(temp,copy)
@@ -179,15 +178,15 @@ object ImdbAnalysis {
     val temp3 = temp2.map { case (k,v) => (v.sum.toFloat/v.size, v.min, v.max, k)}
     println(temp3)*/
 
-    //val durations = timed("Task 1", task1(titleBasicsList))
-    //val titles = timed("Task 2", task2(titleBasicsList, titleRatingsList))
-    //val topRated = timed("Task 3", task3(titleBasicsList, titleRatingsList))
-    //val crews = timed("Task 4", task4(titleBasicsList, titleCrewList, nameBasicsList))
-    //println(durations)
-    //println(titles)
-    //println(topRated)
-    //println(crews)
-    //println(timing)
+    // val durations = timed("Task 1", task1(titleBasicsList))
+    // val titles = timed("Task 2", task2(titleBasicsList, titleRatingsList))
+    // val topRated = timed("Task 3", task3(titleBasicsList, titleRatingsList))
+    // val crews = timed("Task 4", task4(titleBasicsList, titleCrewList, nameBasicsList))
+    // println(durations)
+    // println(titles)
+    // println(topRated)
+    // println(crews)
+    // println(timing)
   }
 
   val timing = new StringBuffer
