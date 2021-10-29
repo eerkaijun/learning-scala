@@ -1,5 +1,7 @@
 package imdb
 
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.io.File
 import scala.io.Source
 
@@ -19,11 +21,7 @@ object ImdbData {
   private[imdb] def nameBasicsPath = filePath("name.basics")
 
   private[imdb] def readFile[A](filename: String, parseFunction: String => A) = {
-    val bufferedSource = Source.fromFile(filename);
-    //val lines = (for (line <- bufferedSource.getLines()) yield parseTitleBasics(line)).toList
-    val lines = bufferedSource.getLines().map(parseFunction).toList
-    bufferedSource.close
-    lines
+    new String(Files.readAllBytes(Paths.get(filename))).split('\n').map(parseFunction).toList
   }
 
   private[imdb] def parseAttribute(word: String): Option[String] = 
